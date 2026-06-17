@@ -3,16 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的旅行足迹 · 中国</title>
-<script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.5.0/echarts.min.js"
-  onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';document.head.appendChild(s);">
-</script>
-<script src="china-geo.js"></script>
+<title id="pageTitle">CityDots · 城市印记</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: #0a0a0a;
-    color: #ffffff;
+    background: #1B1814;
+    color: #E4D9CC;
     font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     height: 100vh;
     overflow: hidden;
@@ -27,58 +24,83 @@
 
   .sidebar {
     width: 300px;
-    background: #111111;
-    border-right: 1px solid #2a2a2a;
+    background: rgba(27, 24, 20, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(212, 184, 150, 0.1);
     display: flex;
     flex-direction: column;
-    padding: 24px;
+    padding: 28px 24px;
     flex-shrink: 0;
+    z-index: 10;
   }
 
   .logo {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
   }
   .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, #C9A84C, #F0D060);
-    border-radius: 8px;
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, #D4B896, #E8D5A3, #C9A67A);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(212, 184, 150, 0.2);
   }
   .logo-text {
-    font-size: 18px;
-    font-weight: 600;
-    color: #C9A84C;
-    letter-spacing: 2px;
+    font-size: 19px;
+    font-weight: 500;
+    color: #D4B896;
+    letter-spacing: 3px;
+  }
+  .lang-btn {
+    margin-left: auto;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid rgba(212, 184, 150, 0.15);
+    color: #8B7D6B;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 1px;
+    transition: all 0.25s;
+    flex-shrink: 0;
+  }
+  .lang-btn:hover {
+    border-color: #D4B896;
+    color: #D4B896;
+    background: rgba(212, 184, 150, 0.06);
   }
 
   .stat-card {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 12px;
+    background: rgba(212, 184, 150, 0.04);
+    border: 1px solid rgba(212, 184, 150, 0.08);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 10px;
   }
   .stat-label {
-    font-size: 12px;
-    color: #666;
-    letter-spacing: 1px;
+    font-size: 11px;
+    color: #8B7D6B;
+    letter-spacing: 2px;
     text-transform: uppercase;
   }
   .stat-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: #C9A84C;
-    margin-top: 4px;
+    font-size: 32px;
+    font-weight: 300;
+    color: #D4B896;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Pro Display", "PingFang SC", sans-serif;
   }
   .stat-sub {
-    font-size: 12px;
-    color: #555;
+    font-size: 11px;
+    color: #6B5F52;
     margin-top: 2px;
   }
 
@@ -87,45 +109,49 @@
     overflow-y: auto;
     margin-top: 8px;
   }
-  .city-list::-webkit-scrollbar { width: 4px; }
-  .city-list::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+  .city-list::-webkit-scrollbar { width: 3px; }
+  .city-list::-webkit-scrollbar-thumb { background: rgba(212, 184, 150, 0.15); border-radius: 2px; }
 
   .city-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
-    margin-bottom: 4px;
-    border-radius: 6px;
-    background: #161616;
+    padding: 9px 12px;
+    margin-bottom: 3px;
+    border-radius: 8px;
+    background: rgba(212, 184, 150, 0.03);
     font-size: 13px;
-    color: #888;
+    color: #A69888;
+    transition: background 0.2s;
   }
+  .city-item:hover { background: rgba(212, 184, 150, 0.06); }
   .city-item .province {
     font-size: 11px;
-    color: #555;
+    color: #6B5F52;
   }
   .city-item .dot {
-    width: 8px; height: 8px;
+    width: 6px; height: 6px;
     border-radius: 50%;
-    background: #C9A84C;
+    background: #D4B896;
+    box-shadow: 0 0 6px rgba(212, 184, 150, 0.4);
   }
 
   .reset-btn {
     margin-top: 16px;
     padding: 10px;
     background: transparent;
-    border: 1px solid #3a3a3a;
-    color: #888;
+    border: 1px solid rgba(212, 184, 150, 0.1);
+    color: #8B7D6B;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 13px;
-    letter-spacing: 1px;
-    transition: all 0.2s;
+    font-size: 12px;
+    letter-spacing: 2px;
+    transition: all 0.25s;
   }
   .reset-btn:hover {
-    border-color: #C9A84C;
-    color: #C9A84C;
+    border-color: rgba(212, 184, 150, 0.3);
+    color: #D4B896;
+    background: rgba(212, 184, 150, 0.04);
   }
 
   .main {
@@ -133,6 +159,26 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: hidden;
+    perspective: 1200px;
+  }
+
+  .landmark-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .landmark-bg.show { opacity: 0.40; }
+  .landmark-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(27,24,20,0.35) 100%);
   }
 
   .header {
@@ -140,52 +186,73 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid rgba(212, 184, 150, 0.08);
+    background: rgba(27, 24, 20, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 10;
+    position: relative;
   }
   .header-title {
-    font-size: 16px;
-    color: #888;
-    letter-spacing: 1px;
+    font-size: 15px;
+    color: #A69888;
+    letter-spacing: 2px;
+    font-weight: 400;
   }
   .header-hint {
     font-size: 13px;
-    color: #555;
+    color: #6B5F52;
     margin-left: auto;
   }
-  .header-hint span {
-    color: #C9A84C;
-  }
+  .header-hint span { color: #D4B896; }
 
   .back-btn {
     display: none;
     padding: 6px 16px;
     background: transparent;
-    border: 1px solid #C9A84C;
-    color: #C9A84C;
+    border: 1px solid rgba(212, 184, 150, 0.25);
+    color: #D4B896;
     border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
     letter-spacing: 1px;
-    transition: all 0.2s;
+    transition: all 0.25s;
   }
-  .back-btn:hover { background: rgba(201,168,76,0.1); }
+  .back-btn:hover { background: rgba(212, 184, 150, 0.08); }
   .back-btn.show { display: block; }
 
   #map {
     flex: 1;
+    transform: rotateX(3deg);
+    transform-origin: center center;
+    margin: -8px 0 -16px 0;
+    z-index: 1;
+    position: relative;
+  }
+
+  .glass-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+      radial-gradient(ellipse at 60% 15%, rgba(232, 213, 163, 0.04) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 100%, rgba(212, 184, 150, 0.05) 0%, transparent 35%);
   }
 
   .toast {
     position: fixed;
-    top: 24px;
+    top: 28px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 10px 24px;
-    background: #1a1a1a;
-    border: 1px solid #C9A84C;
-    color: #C9A84C;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 10px 28px;
+    background: rgba(30, 27, 23, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(212, 184, 150, 0.2);
+    color: #D4B896;
+    border-radius: 10px;
+    font-size: 13px;
     letter-spacing: 1px;
     opacity: 0;
     transition: opacity 0.3s;
@@ -199,19 +266,100 @@
     bottom: 24px;
     right: 32px;
     display: flex;
-    gap: 20px;
+    gap: 24px;
+    z-index: 5;
   }
   .legend-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #666;
+    gap: 8px;
+    font-size: 11px;
+    color: #8B7D6B;
+    letter-spacing: 1px;
   }
   .legend-dot {
     width: 10px; height: 10px;
-    border-radius: 2px;
+    border-radius: 3px;
   }
+
+  .footer {
+    position: absolute;
+    bottom: 14px;
+    left: 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 11px;
+    z-index: 5;
+  }
+  .footer a {
+    color: #6B5F52;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: color 0.25s;
+  }
+  .footer a:hover { color: #D4B896; }
+  .footer-divider { color: rgba(212, 184, 150, 0.12); }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 10, 8, 0.85);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: rgba(30, 27, 23, 0.97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(212, 184, 150, 0.15);
+    border-radius: 14px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid rgba(212, 184, 150, 0.08);
+  }
+  .modal-title {
+    color: #D4B896;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: #8B7D6B;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: #D4B896; }
+  .modal-body {
+    padding: 22px;
+    color: #A69888;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+  .modal-body a {
+    color: #D4B896;
+    text-decoration: none;
+  }
+  .modal-body a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -220,149 +368,291 @@
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-icon">✈</div>
-      <div class="logo-text">旅行足迹</div>
+      <div class="logo-text" id="logoText">CityDots</div>
+      <button class="lang-btn" onclick="toggleLang()" title="Switch Language" id="langBtn">EN</button>
     </div>
 
     <div class="stat-card">
-      <div class="stat-label">已访问城市</div>
+      <div class="stat-label" id="statVisitedLabel">已访问城市</div>
       <div class="stat-value" id="visitedCount">0</div>
       <div class="stat-sub" id="coverageText">覆盖 0 个省份</div>
     </div>
 
     <div class="stat-card">
-      <div class="stat-label">探索率</div>
+      <div class="stat-label" id="statRateLabel">探索率</div>
       <div class="stat-value" id="exploreRate">0%</div>
-      <div class="stat-sub">全国约 370 个地级市</div>
+      <div class="stat-sub" id="statTotalLabel">全国约 370 个地级市</div>
     </div>
 
     <div class="city-list" id="cityList">
       <div style="color:#444;text-align:center;padding:20px;">点击地图上的城市<br>开始记录旅程</div>
     </div>
 
-    <button class="reset-btn" onclick="resetAll()">清 空 记 录</button>
+    <button class="reset-btn" id="resetBtn" onclick="resetAll()">清 空 记 录</button>
   </aside>
 
   <div class="main">
+    <div class="landmark-bg" id="landmarkBg"></div>
     <div class="header">
-      <span class="header-title">中 国</span>
+      <span class="header-title" id="headerTitle">中 国</span>
       <button class="back-btn" id="backBtn" onclick="backToChina()">← 返回全国</button>
-      <span class="header-hint">点击城市标记 <span>已到达</span></span>
+      <span class="header-hint" id="headerHint">点击城市标记 <span>已到达</span></span>
     </div>
+    <div class="glass-overlay"></div>
     <div id="map"></div>
     <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#1e1e1e;border:1px solid #333"></div> 未到达</div>
-      <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg,#C9A84C,#F0D060)"></div> 已到达</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(255,248,240,0.06);border:1px solid rgba(255,255,255,0.06)"></div> <span id="legendNotVisited">未到达</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg,#D4B896,#E8D5A3)"></div> <span id="legendVisited">已到达</span></div>
+    </div>
+    <div class="footer">
+      <a href="#" onclick="showModal('privacy');return false;" id="footerPrivacy">隐私政策</a>
+      <span class="footer-divider">|</span>
+      <a href="#" onclick="showModal('about');return false;" id="footerAbout">关于我们</a>
+      <span class="footer-divider">|</span>
+      <a href="mailto:sydneyjiang00@gmail.com" id="footerContact">联系我们</a>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle"></span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
 <script>
+// ========== i18n ==========
+const LANG_KEY = 'china-travel-lang';
+let lang = localStorage.getItem(LANG_KEY) || 'zh';
+
+const i18n = {
+  zh: {
+    title: 'CityDots · 城市印记',
+    logo: 'CityDots',
+    citiesVisited: '已访问城市',
+    provincesCovered: '覆盖 {n} 个省份',
+    provincesNone: '覆盖 0 个省份',
+    exploreRate: '探索率',
+    totalCities: '全国约 370 个地级市',
+    reset: '清 空 记 录',
+    emptyHint: '点击地图上的城市<br>开始记录旅程',
+    china: '中 国',
+    back: '← 返回全国',
+    hint: '点击城市标记 <span>已到达</span>',
+    notVisited: '未到达',
+    visited: '已到达',
+    tooltipDrill: '点击查看城市 →',
+    tooltipVisited: '★ 已到达（点击取消）',
+    tooltipNotVisited: '点击标记为已到达',
+    toastCancel: '已取消：',
+    toastAdd: '✦ 到达：',
+    toastLoading: '加载中...',
+    toastNoData: '该地区暂无城市数据',
+    toastCleared: '记录已清空',
+    confirmClear: '确定要清空所有旅行记录吗？此操作不可撤回。',
+    mapError: '地图加载失败，请刷新重试',
+    langSwitch: 'EN',
+    langLabel: 'English',
+    footerPrivacy: '隐私政策',
+    footerAbout: '关于我们',
+    footerContact: '联系我们',
+    modalPrivacyTitle: '隐私政策',
+    modalPrivacyBody: '<p>本网站仅使用浏览器的本地存储（localStorage）保存您标记的城市数据。</p><p>所有数据<strong>存储在您的设备上</strong>，不会被上传到任何服务器，也不会被分享给第三方。</p><p>您可以随时点击"清空记录"按钮删除所有数据。</p><p>本网站不含任何追踪脚本、cookies 或分析工具。</p>',
+    modalAboutTitle: '关于我们',
+    modalAboutBody: '<p>CityDots 是一个帮助旅行者记录中国城市探索历程的互动工具。</p><p>点击地图上的城市，用一个个亮点串起属于你自己的旅行地图。</p>'
+  },
+  en: {
+    title: 'CityDots · City Marks',
+    logo: 'CityDots',
+    citiesVisited: 'Cities Visited',
+    provincesCovered: '{n} Provinces Covered',
+    provincesNone: '0 Provinces Covered',
+    exploreRate: 'Exploration Rate',
+    totalCities: '~370 prefecture-level cities',
+    reset: 'Clear Records',
+    emptyHint: 'Click cities on the map<br>to start recording',
+    china: 'China',
+    back: '← Back to China',
+    hint: 'Click city to mark <span>Visited</span>',
+    notVisited: 'Not Visited',
+    visited: 'Visited',
+    tooltipDrill: 'Click to view cities →',
+    tooltipVisited: '★ Visited (click to cancel)',
+    tooltipNotVisited: 'Click to mark as visited',
+    toastCancel: 'Cancelled: ',
+    toastAdd: '✦ Visited: ',
+    toastLoading: 'Loading...',
+    toastNoData: 'No city data available',
+    toastCleared: 'Records cleared',
+    confirmClear: 'Are you sure you want to clear all records? This cannot be undone.',
+    mapError: 'Map failed to load, please refresh',
+    langSwitch: '中文',
+    langLabel: '切换中文',
+    footerPrivacy: 'Privacy Policy',
+    footerAbout: 'About Us',
+    footerContact: 'Contact Us',
+    modalPrivacyTitle: 'Privacy Policy',
+    modalPrivacyBody: '<p>This website uses only your browser\'s localStorage to save your marked city data.</p><p>All data is <strong>stored on your device</strong> and is never uploaded to any server or shared with third parties.</p><p>You can delete all data at any time by clicking the "Clear Records" button.</p><p>This site contains no tracking scripts, cookies, or analytics tools.</p>',
+    modalAboutTitle: 'About Us',
+    modalAboutBody: '<p>CityDots is an interactive tool for travelers to record their exploration of Chinese cities.</p><p>Click cities on the map to mark places you\'ve visited — connect the dots and build your own travel map.</p>'
+  }
+};
+
+function t(key, params) {
+  let text = i18n[lang][key] || key;
+  if (params) {
+    Object.keys(params).forEach(k => {
+      text = text.replace('{' + k + '}', params[k]);
+    });
+  }
+  return text;
+}
+
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  localStorage.setItem(LANG_KEY, lang);
+  refreshAllUI();
+}
+
+function showModal(type) {
+  document.getElementById('modalTitle').textContent = t('modal' + type.charAt(0).toUpperCase() + type.slice(1) + 'Title');
+  document.getElementById('modalBody').innerHTML = t('modal' + type.charAt(0).toUpperCase() + type.slice(1) + 'Body');
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
 // ========== State ==========
 const STORAGE_KEY = 'china-travel-visited';
 const MAP_KEY = 'china-travel-city-province';
+const COORDS_KEY = 'china-travel-city-coords';
 let visited = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
 let cityProvinceMap = JSON.parse(localStorage.getItem(MAP_KEY) || '{}');
+let cityCoords = JSON.parse(localStorage.getItem(COORDS_KEY) || '{}');
 let chinaGeoJSON = null;
 let provinceGeoJSON = {};  // adcode -> GeoJSON
 let currentView = 'china'; // 'china' | province adcode
 let chart = null;
 
 // ========== Init ==========
-function bootstrap() {
-  if (typeof echarts === 'undefined') {
+updateStaticUI();
+const mapEl = document.getElementById('map');
+chart = echarts.init(mapEl, null, {});
+window.addEventListener('resize', () => chart.resize());
+
+fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+  .then(r => r.json())
+  .then(geo => {
+    chinaGeoJSON = geo;
+    chinaGeoJSON.features.forEach(f => {
+      const name = f.properties.name;
+      const adcode = String(f.properties.adcode || f.properties.id || '');
+      if (!adcodeMap[name]) adcodeMap[name] = adcode;
+      if (!adcodeNameMap[adcode]) adcodeNameMap[adcode] = name;
+    });
+    renderChina();
+  })
+  .catch(() => {
     document.getElementById('map').innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#C9A84C;font-size:16px;">地图组件加载中，请刷新重试...</div>';
-    return;
-  }
-  if (!window.CHINA_GEOJSON) {
-    document.getElementById('map').innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#C9A84C;font-size:16px;">地图数据加载失败，请刷新重试</div>';
-    return;
-  }
-
-  const mapEl = document.getElementById('map');
-  chart = echarts.init(mapEl, null, { backgroundColor: '#0a0a0a' });
-  window.addEventListener('resize', () => chart.resize());
-
-  chinaGeoJSON = window.CHINA_GEOJSON;
-  chinaGeoJSON.features.forEach(f => {
-    const name = f.properties.name;
-    const adcode = String(f.properties.adcode || f.properties.id || '');
-    if (!adcodeMap[name]) adcodeMap[name] = adcode;
-    if (!adcodeNameMap[adcode]) adcodeNameMap[adcode] = name;
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#D4B896;font-size:16px;">' + t('mapError') + '</div>';
   });
-  renderChina();
-}
-
-// Wait for ECharts to be available (handle async fallback loading)
-if (typeof echarts !== 'undefined') {
-  bootstrap();
-} else {
-  // ECharts not loaded yet, wait for it
-  document.addEventListener('DOMContentLoaded', function() {
-    var attempts = 0;
-    var check = setInterval(function() {
-      if (typeof echarts !== 'undefined') {
-        clearInterval(check);
-        bootstrap();
-      }
-      if (++attempts > 50) {
-        clearInterval(check);
-        document.getElementById('map').innerHTML =
-          '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#C9A84C;font-size:16px;">地图组件加载超时，请检查网络后刷新</div>';
-      }
-    }, 200);
-  });
-}
 
 const adcodeMap = {};    // province name -> adcode
 const adcodeNameMap = {}; // adcode -> province name
 
+// Province atmosphere gradients (inspired by landmark colors)
+const ATMOSPHERE = {
+  '110000': 'linear-gradient(135deg, rgba(190,95,70,0.5) 0%, rgba(200,155,90,0.3) 35%, transparent 65%), radial-gradient(ellipse at 60% 45%, rgba(220,180,120,0.35) 0%, transparent 55%)',
+  '310000': 'linear-gradient(180deg, rgba(70,90,160,0.4) 0%, rgba(120,140,200,0.25) 35%, transparent 65%), radial-gradient(ellipse at 65% 50%, rgba(160,150,210,0.3) 0%, transparent 50%)',
+  '440000': 'linear-gradient(135deg, rgba(50,120,90,0.4) 0%, rgba(80,150,120,0.25) 45%, transparent 65%), radial-gradient(ellipse at 45% 55%, rgba(100,180,150,0.3) 0%, transparent 50%)',
+  '510000': 'linear-gradient(180deg, rgba(45,110,70,0.45) 0%, rgba(90,150,110,0.25) 45%, transparent 65%), radial-gradient(ellipse at 40% 45%, rgba(130,190,150,0.3) 0%, transparent 50%)',
+  '530000': 'linear-gradient(180deg, rgba(35,120,130,0.4) 0%, rgba(70,160,90,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 40%, rgba(110,190,160,0.35) 0%, transparent 50%)',
+  '540000': 'linear-gradient(180deg, rgba(90,120,180,0.4) 0%, rgba(160,180,220,0.2) 35%, transparent 65%), radial-gradient(ellipse at 50% 30%, rgba(200,220,250,0.35) 0%, transparent 50%)',
+  '610000': 'linear-gradient(135deg, rgba(180,140,70,0.45) 0%, rgba(200,150,60,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 50%, rgba(220,180,110,0.3) 0%, transparent 50%)',
+  '330000': 'linear-gradient(180deg, rgba(50,120,120,0.4) 0%, rgba(100,160,160,0.2) 45%, transparent 65%), radial-gradient(ellipse at 50% 45%, rgba(140,200,200,0.3) 0%, transparent 50%)',
+  '320000': 'linear-gradient(135deg, rgba(70,140,90,0.4) 0%, rgba(120,170,120,0.2) 45%, transparent 65%), radial-gradient(ellipse at 55% 50%, rgba(150,200,160,0.3) 0%, transparent 50%)',
+  '450000': 'linear-gradient(180deg, rgba(35,130,90,0.45) 0%, rgba(70,160,120,0.25) 45%, transparent 65%), radial-gradient(ellipse at 45% 55%, rgba(90,190,140,0.35) 0%, transparent 50%)',
+  '430000': 'linear-gradient(180deg, rgba(50,110,90,0.4) 0%, rgba(70,140,120,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 40%, rgba(110,180,160,0.35) 0%, transparent 50%)',
+  '370000': 'linear-gradient(180deg, rgba(100,110,90,0.4) 0%, rgba(150,160,120,0.2) 45%, transparent 65%), radial-gradient(ellipse at 50% 30%, rgba(180,190,160,0.3) 0%, transparent 50%)',
+  '650000': 'linear-gradient(180deg, rgba(70,100,150,0.4) 0%, rgba(120,160,190,0.25) 35%, transparent 65%), radial-gradient(ellipse at 50% 25%, rgba(170,200,230,0.35) 0%, transparent 50%)',
+  '460000': 'linear-gradient(180deg, rgba(25,140,160,0.45) 0%, rgba(50,170,180,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 60%, rgba(80,200,220,0.35) 0%, transparent 50%)',
+};
+
+function setLandmarkBg(adcode) {
+  const bg = document.getElementById('landmarkBg');
+  const gradient = ATMOSPHERE[adcode];
+  if (gradient) {
+    bg.style.backgroundImage = gradient;
+    bg.classList.add('show');
+  } else {
+    bg.style.backgroundImage = 'none';
+    bg.classList.remove('show');
+  }
+}
+
+function clearLandmarkBg() {
+  var bg = document.getElementById('landmarkBg');
+  bg.classList.remove('show');
+  setTimeout(function() { bg.style.backgroundImage = 'none'; }, 1000);
+}
+
 // ========== Render ==========
 function renderChina() {
   currentView = 'china';
+  clearLandmarkBg();
   document.getElementById('backBtn').classList.remove('show');
 
-  // Register China map with modified properties for highlighting
   echarts.registerMap('china', chinaGeoJSON);
-
   const option = buildMapOption('china', chinaGeoJSON.features);
   chart.setOption(option, true);
   bindClick('china');
+  updateStaticUI();
   updateStats();
 }
 
 function renderProvince(adcode) {
   currentView = adcode;
   const provName = adcodeNameMap[adcode] || adcode;
+  setLandmarkBg(adcode);
   document.getElementById('backBtn').classList.add('show');
-  document.querySelector('.header-title').textContent = provName;
+  document.getElementById('headerTitle').textContent = provName;
 
   if (provinceGeoJSON[adcode]) {
     doRenderProvince(adcode);
     return;
   }
 
-  showToast('加载中...');
+  showToast(t('toastLoading'));
   fetch(`https://geo.datav.aliyun.com/areas_v3/bound/${adcode}_full.json`)
     .then(r => r.json())
     .then(geo => {
       provinceGeoJSON[adcode] = geo;
-      // Register city->province mapping
       geo.features.forEach(f => {
         cityProvinceMap[f.properties.name] = adcode;
+        const c = f.properties.center || f.properties.centroid;
+        if (c) cityCoords[f.properties.name] = c;
       });
       localStorage.setItem(MAP_KEY, JSON.stringify(cityProvinceMap));
+      localStorage.setItem(COORDS_KEY, JSON.stringify(cityCoords));
       doRenderProvince(adcode);
     })
-    .catch(() => showToast('该地区暂无城市数据'));
+    .catch(() => showToast(t('toastNoData')));
 }
 
 function doRenderProvince(adcode) {
   const geo = provinceGeoJSON[adcode];
-  const provName = adcodeNameMap[adcode] || adcode;
   const mapName = 'province_' + adcode;
   echarts.registerMap(mapName, geo);
 
@@ -371,61 +661,110 @@ function doRenderProvince(adcode) {
   bindClick(mapName);
 }
 
+// ========== City Dots ==========
+function buildMarkPoints() {
+  const points = [];
+  for (const cityName of visited) {
+    const coords = cityCoords[cityName];
+    if (coords && coords.length === 2) {
+      points.push({
+        name: cityName,
+        coord: coords,
+        symbol: 'pin',
+        symbolSize: 12,
+        itemStyle: {
+          color: {
+            type: 'radial', x: 0.5, y: 0.5, r: 0.5,
+            colorStops: [
+              { offset: 0, color: '#FFF8DC' },
+              { offset: 0.3, color: '#E8D5A3' },
+              { offset: 0.7, color: '#D4B896' },
+              { offset: 1, color: 'rgba(212,184,150,0.2)' }
+            ]
+          },
+          borderColor: 'rgba(255,230,140,0.6)',
+          borderWidth: 1,
+          shadowBlur: 12,
+          shadowColor: 'rgba(212,175,55,0.6)'
+        },
+        label: {
+          show: true,
+          position: 'right',
+          color: '#D4B896',
+          fontSize: 10,
+          distance: 4,
+          formatter: function(p) { return p.name; }
+        }
+      });
+    }
+  }
+  return points;
+}
+
 // ========== Map Option ==========
 function buildMapOption(mapName, features) {
   const isChinaView = mapName === 'china';
   const data = features.map(f => {
     const name = f.properties.name;
-    let isVisited = visited.has(name);
-
-    // Province view: check if any city in this province is visited
-    if (isChinaView && !isVisited) {
-      const adcode = adcodeMap[name];
-      if (adcode) {
-        // Check loaded province GeoJSON
-        if (provinceGeoJSON[adcode]) {
-          isVisited = provinceGeoJSON[adcode].features.some(c => visited.has(c.properties.name));
-        } else {
-          // Fall back to cityProvinceMap
-          isVisited = Object.entries(cityProvinceMap).some(
-            ([city, prov]) => prov === adcode && visited.has(city)
-          );
-        }
-      }
-    }
+    const isVisited = visited.has(name);
 
     return {
       name: name,
       itemStyle: {
-        areaColor: isVisited ? '#C9A84C' : '#1e1e1e',
-        borderColor: isVisited ? '#B8941F' : '#2a2a2a',
-        borderWidth: isVisited ? 1.2 : 0.8,
-        shadowBlur: isVisited ? 8 : 0,
-        shadowColor: 'rgba(201,168,76,0.3)'
+        areaColor: isVisited
+          ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 1,
+              colorStops: [
+                { offset: 0, color: 'rgba(212,184,150,0.85)' },
+                { offset: 0.4, color: 'rgba(232,213,163,0.75)' },
+                { offset: 0.7, color: 'rgba(201,166,122,0.8)' },
+                { offset: 1, color: 'rgba(180,145,100,0.85)' }
+              ]}
+          : 'rgba(255,248,240,0.04)',
+        borderColor: isVisited ? 'rgba(232,213,163,0.5)' : 'rgba(255,255,255,0.04)',
+        borderWidth: isVisited ? 1.2 : 0.5,
+        shadowBlur: isVisited ? 14 : 0,
+        shadowColor: 'rgba(212,184,150,0.35)',
+        shadowOffsetY: isVisited ? 1 : 0
       },
       emphasis: {
-        itemStyle: { areaColor: isVisited ? '#E0C060' : '#2a2a2a' },
-        label: { color: '#fff', fontSize: isChinaView ? 14 : 13 }
+        itemStyle: {
+          areaColor: isVisited
+            ? { type: 'linear', x: 0, y: 0, x2: 1, y2: 1,
+                colorStops: [
+                  { offset: 0, color: 'rgba(232,213,163,0.95)' },
+                  { offset: 0.5, color: 'rgba(245,235,200,0.9)' },
+                  { offset: 1, color: 'rgba(212,184,150,0.95)' }
+                ]}
+            : 'rgba(255,255,255,0.04)',
+          shadowBlur: isVisited ? 20 : 0,
+          shadowColor: 'rgba(212,184,150,0.5)'
+        },
+        label: { color: '#F0E8D8', fontSize: isChinaView ? 14 : 13 }
       }
     };
   });
 
+  const markPoints = isChinaView ? buildMarkPoints() : [];
+
   return {
     tooltip: {
       trigger: 'item',
-      backgroundColor: '#1a1a1a',
-      borderColor: '#C9A84C',
+      backgroundColor: 'rgba(30,27,23,0.96)',
+      borderColor: 'rgba(212,184,150,0.3)',
       padding: [10, 14],
-      textStyle: { color: '#ccc', fontSize: 13 },
+      textStyle: { color: '#C4B8A8', fontSize: 13 },
       formatter: function(params) {
         if (!params.name) return '';
+        if (params.componentType === 'markPoint') {
+          return '<span style="color:#D4B896">✦ ' + t('visited') + ': ' + params.name + '</span>';
+        }
         const isVisited = visited.has(params.name);
         const hint = isChinaView
-          ? '<span style="color:#C9A84C">点击查看城市 →</span>'
+          ? '<span style="color:#D4B896">' + t('tooltipDrill') + '</span>'
           : (isVisited
-            ? '<span style="color:#C9A84C">★ 已到达（点击取消）</span>'
-            : '<span style="color:#666">点击标记为已到达</span>');
-        return `<span style="font-size:14px;color:#fff">${params.name}</span><br/>${hint}`;
+            ? '<span style="color:#D4B896">' + t('tooltipVisited') + '</span>'
+            : '<span style="color:#8B7D6B">' + t('tooltipNotVisited') + '</span>');
+        return '<span style="font-size:14px;color:#fff">' + params.name + '</span><br/>' + hint;
       }
     },
     series: [{
@@ -434,11 +773,12 @@ function buildMapOption(mapName, features) {
       roam: true,
       scaleLimit: { min: 1, max: 8 },
       zoom: isChinaView ? 1.2 : 1,
-      center: isChinaView ? undefined : undefined,
       label: {
         show: true,
-        color: '#888',
+        color: 'rgba(200,188,170,0.35)',
         fontSize: isChinaView ? 10 : 12,
+        textShadowBlur: 2,
+        textShadowColor: 'rgba(0,0,0,0.4)',
         formatter: function(p) {
           if (!p.name) return '';
           const n = p.name;
@@ -447,16 +787,54 @@ function buildMapOption(mapName, features) {
         }
       },
       itemStyle: {
-        borderColor: '#2a2a2a',
-        borderWidth: 0.8,
-        areaColor: '#1e1e1e'
+        borderColor: 'rgba(255,255,255,0.04)',
+        borderWidth: 0.5,
+        areaColor: 'rgba(255,248,240,0.04)'
       },
       emphasis: {
-        label: { color: '#fff' },
-        itemStyle: { areaColor: '#2a2a2a' }
+        label: { color: '#F0E8D8' },
+        itemStyle: {
+          areaColor: 'rgba(255,255,255,0.05)',
+          shadowBlur: 10,
+          shadowColor: 'rgba(212,184,150,0.1)'
+        }
       },
       selectedMode: false,
-      data: data
+      data: data,
+      markPoint: markPoints.length > 0 ? {
+        silent: true,
+        symbol: 'pin',
+        symbolSize: 14,
+        animation: true,
+        animationDuration: 800,
+        animationEasing: 'elasticOut',
+        label: {
+          show: true,
+          position: 'right',
+          color: '#D4B896',
+          fontSize: 11,
+          fontWeight: '500',
+          distance: 6,
+          textShadowBlur: 4,
+          textShadowColor: 'rgba(0,0,0,0.6)'
+        },
+        itemStyle: {
+          color: {
+            type: 'radial', x: 0.5, y: 0.5, r: 0.5,
+            colorStops: [
+              { offset: 0, color: '#F5ECD7' },
+              { offset: 0.25, color: '#E8D5A3' },
+              { offset: 0.6, color: '#D4B896' },
+              { offset: 1, color: 'rgba(212,184,150,0.15)' }
+            ]
+          },
+          borderColor: 'rgba(232,213,163,0.5)',
+          borderWidth: 1,
+          shadowBlur: 12,
+          shadowColor: 'rgba(212,184,150,0.35)'
+        },
+        data: markPoints
+      } : undefined
     }]
   };
 }
@@ -486,16 +864,16 @@ function bindClick(mapName) {
 function toggleCity(name) {
   if (visited.has(name)) {
     visited.delete(name);
-    showToast('已取消：' + name);
+    showToast(t('toastCancel') + name);
   } else {
     visited.add(name);
-    showToast('✦ 到达：' + name);
+    showToast(t('toastAdd') + name);
   }
   saveVisited();
 }
 
 function backToChina() {
-  document.querySelector('.header-title').textContent = '中 国';
+  document.getElementById('headerTitle').textContent = t('china');
   renderChina();
 }
 
@@ -506,7 +884,7 @@ function saveVisited() {
 
 function resetAll() {
   if (visited.size === 0) return;
-  if (confirm('确定要清空所有旅行记录吗？此操作不可撤回。')) {
+  if (confirm(t('confirmClear'))) {
     visited.clear();
     saveVisited();
     if (currentView === 'china') {
@@ -515,17 +893,46 @@ function resetAll() {
       doRenderProvince(currentView);
     }
     updateStats();
-    showToast('记录已清空');
+    showToast(t('toastCleared'));
   }
 }
 
-// ========== Stats ==========
+// ========== Stats & UI Refresh ==========
+function updateStaticUI() {
+  document.getElementById('pageTitle').textContent = t('title');
+  document.getElementById('logoText').textContent = t('logo');
+  document.getElementById('statVisitedLabel').textContent = t('citiesVisited');
+  document.getElementById('statRateLabel').textContent = t('exploreRate');
+  document.getElementById('statTotalLabel').textContent = t('totalCities');
+  document.getElementById('resetBtn').textContent = t('reset');
+  document.getElementById('headerTitle').textContent = t('china');
+  document.getElementById('backBtn').textContent = t('back');
+  document.getElementById('headerHint').innerHTML = t('hint');
+  document.getElementById('legendNotVisited').textContent = t('notVisited');
+  document.getElementById('legendVisited').textContent = t('visited');
+  document.getElementById('langBtn').textContent = t('langSwitch');
+  document.getElementById('langBtn').title = t('langLabel');
+  document.getElementById('footerPrivacy').textContent = t('footerPrivacy');
+  document.getElementById('footerAbout').textContent = t('footerAbout');
+  document.getElementById('footerContact').textContent = t('footerContact');
+}
+
+function refreshAllUI() {
+  updateStaticUI();
+  if (currentView === 'china') {
+    renderChina();
+  } else {
+    document.getElementById('headerTitle').textContent = adcodeNameMap[currentView] || currentView;
+    document.getElementById('backBtn').classList.add('show');
+    doRenderProvince(currentView);
+  }
+}
+
 function updateStats() {
   const count = visited.size;
   const total = 370;
   const rate = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0';
 
-  // Count unique provinces from visited cities
   let provWithVisits = new Set();
   for (const cityName of visited) {
     const provAdcode = cityProvinceMap[cityName];
@@ -536,14 +943,14 @@ function updateStats() {
 
   document.getElementById('visitedCount').textContent = count;
   document.getElementById('exploreRate').textContent = rate + '%';
+  const provCount = provWithVisits.size;
   document.getElementById('coverageText').textContent =
-    provWithVisits.size > 0 ? `覆盖 ${provWithVisits.size} 个省份` : '覆盖 0 个省份';
+    provCount > 0 ? t('provincesCovered', { n: provCount }) : t('provincesNone');
 
-  // Update city list with province info
   const listEl = document.getElementById('cityList');
   if (visited.size === 0) {
     listEl.innerHTML =
-      '<div style="color:#444;text-align:center;padding:20px;">点击地图上的城市<br>开始记录旅程</div>';
+      '<div style="color:#444;text-align:center;padding:20px;">' + t('emptyHint') + '</div>';
     return;
   }
 
@@ -556,11 +963,8 @@ function updateStats() {
   listEl.innerHTML = sorted.map(name => {
     const provAdcode = cityProvinceMap[name];
     const provName = adcodeNameMap[provAdcode] || '';
-    return `
-      <div class="city-item">
-        <span>${name}<span class="province"> · ${provName}</span></span>
-        <div class="dot"></div>
-      </div>`;
+    return '<div class="city-item"><span>' + name +
+      '<span class="province"> · ' + provName + '</span></span><div class="dot"></div></div>';
   }).join('');
 }
 
