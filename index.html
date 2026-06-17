@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的旅行足迹 · 中国</title>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.5.0/echarts.min.js"
+  onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';document.head.appendChild(s);">
+</script>
 <script src="china-geo.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -268,19 +270,52 @@ let currentView = 'china'; // 'china' | province adcode
 let chart = null;
 
 // ========== Init ==========
-const mapEl = document.getElementById('map');
-chart = echarts.init(mapEl, null, { backgroundColor: '#0a0a0a' });
-window.addEventListener('resize', () => chart.resize());
+function bootstrap() {
+  if (typeof echarts === 'undefined') {
+    document.getElementById('map').innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#C9A84C;font-size:16px;">地图组件加载中，请刷新重试...</div>';
+    return;
+  }
+  if (!window.CHINA_GEOJSON) {
+    document.getElementById('map').innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#C9A84C;font-size:16px;">地图数据加载失败，请刷新重试</div>';
+    return;
+  }
 
-// Use embedded China GeoJSON (no network request needed)
-chinaGeoJSON = window.CHINA_GEOJSON;
-chinaGeoJSON.features.forEach(f => {
-  const name = f.properties.name;
-  const adcode = String(f.properties.adcode || f.properties.id || '');
-  if (!adcodeMap[name]) adcodeMap[name] = adcode;
-  if (!adcodeNameMap[adcode]) adcodeNameMap[adcode] = name;
-});
-renderChina();
+  const mapEl = document.getElementById('map');
+  chart = echarts.init(mapEl, null, { backgroundColor: '#0a0a0a' });
+  window.addEventListener('resize', () => chart.resize());
+
+  chinaGeoJSON = window.CHINA_GEOJSON;
+  chinaGeoJSON.features.forEach(f => {
+    const name = f.properties.name;
+    const adcode = String(f.properties.adcode || f.properties.id || '');
+    if (!adcodeMap[name]) adcodeMap[name] = adcode;
+    if (!adcodeNameMap[adcode]) adcodeNameMap[adcode] = name;
+  });
+  renderChina();
+}
+
+// Wait for ECharts to be available (handle async fallback loading)
+if (typeof echarts !== 'undefined') {
+  bootstrap();
+} else {
+  // ECharts not loaded yet, wait for it
+  document.addEventListener('DOMContentLoaded', function() {
+    var attempts = 0;
+    var check = setInterval(function() {
+      if (typeof echarts !== 'undefined') {
+        clearInterval(check);
+        bootstrap();
+      }
+      if (++attempts > 50) {
+        clearInterval(check);
+        document.getElementById('map').innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#C9A84C;font-size:16px;">地图组件加载超时，请检查网络后刷新</div>';
+      }
+    }, 200);
+  });
+}
 
 const adcodeMap = {};    // province name -> adcode
 const adcodeNameMap = {}; // adcode -> province name
