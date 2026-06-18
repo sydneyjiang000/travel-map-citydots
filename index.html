@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">CityDots · 城市印记</title>
+<title id="pageTitle">CityDots · 城迹</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,10 +56,11 @@
     box-shadow: 0 2px 12px rgba(212, 184, 150, 0.2);
   }
   .logo-text {
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 500;
     color: #D4B896;
-    letter-spacing: 3px;
+    letter-spacing: 6px;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", "Songti SC", serif;
   }
   .lang-btn {
     margin-left: auto;
@@ -96,7 +100,7 @@
     color: #D4B896;
     margin-top: 2px;
     font-variant-numeric: tabular-nums;
-    font-family: "SF Pro Display", "PingFang SC", sans-serif;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", serif;
   }
   .stat-sub {
     font-size: 11px;
@@ -168,17 +172,27 @@
     inset: 0;
     background-size: cover;
     background-position: center;
+    background-color: #1B1814;
     opacity: 0;
     transition: opacity 1s ease;
-    z-index: 3;
+    z-index: 0;
     pointer-events: none;
   }
-  .landmark-bg.show { opacity: 0.40; }
+  .landmark-bg.show { opacity: 0.7; }
   .landmark-bg::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 50%, rgba(27,24,20,0.35) 100%);
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(27,24,20,0.3) 100%);
+  }
+
+  .glass-pane {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: rgba(235, 228, 216, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.04);
   }
 
   .header {
@@ -196,8 +210,9 @@
   .header-title {
     font-size: 15px;
     color: #A69888;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
     font-weight: 400;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", serif;
   }
   .header-hint {
     font-size: 13px;
@@ -226,7 +241,7 @@
     transform: rotateX(3deg);
     transform-origin: center center;
     margin: -8px 0 -16px 0;
-    z-index: 1;
+    z-index: 2;
     position: relative;
   }
 
@@ -234,7 +249,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 2;
+    z-index: 3;
     background:
       radial-gradient(ellipse at 60% 15%, rgba(232, 213, 163, 0.04) 0%, transparent 45%),
       radial-gradient(ellipse at 50% 100%, rgba(212, 184, 150, 0.05) 0%, transparent 35%);
@@ -360,6 +375,132 @@
     text-decoration: none;
   }
   .modal-body a:hover { text-decoration: underline; }
+
+  .ripple {
+    position: absolute;
+    width: 24px; height: 24px;
+    border: 2px solid rgba(212, 184, 150, 0.9);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 50;
+    animation: ripple-expand 1.2s ease-out forwards;
+  }
+  @keyframes ripple-expand {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(8); opacity: 0; }
+  }
+
+
+  .diary-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 10, 8, 0.6);
+    z-index: 150;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .diary-overlay.show { display: flex; }
+  .diary-popup {
+    background: rgba(30, 27, 23, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 184, 150, 0.15);
+    border-radius: 14px;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    animation: diary-slide-up 0.3s ease-out;
+  }
+  @keyframes diary-slide-up {
+    0%   { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .diary-header {
+    padding: 18px 22px 10px;
+    color: #D4B896;
+    font-size: 15px;
+    letter-spacing: 2px;
+    font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", serif;
+  }
+  .diary-city-name {
+    color: #E8D5A3;
+  }
+  .diary-body {
+    padding: 0 22px 18px;
+  }
+  .diary-date {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(212, 184, 150, 0.06);
+    border: 1px solid rgba(212, 184, 150, 0.12);
+    border-radius: 8px;
+    color: #D4B896;
+    font-size: 14px;
+    font-family: inherit;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .diary-date:focus { border-color: rgba(212, 184, 150, 0.35); }
+  .diary-date::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(0.5) hue-rotate(330deg); }
+  .diary-note {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(212, 184, 150, 0.06);
+    border: 1px solid rgba(212, 184, 150, 0.12);
+    border-radius: 8px;
+    color: #D4B896;
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    height: 56px;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+  .diary-note:focus { border-color: rgba(212, 184, 150, 0.35); }
+  .diary-note::placeholder { color: rgba(180, 160, 140, 0.3); }
+  .diary-actions {
+    display: flex;
+    gap: 10px;
+    padding: 0 22px 18px;
+  }
+  .diary-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transition: all 0.25s;
+    font-family: inherit;
+  }
+  .diary-btn-save {
+    background: linear-gradient(135deg, rgba(212,184,150,0.25), rgba(180,145,100,0.2));
+    border: 1px solid rgba(212, 184, 150, 0.3);
+    color: #D4B896;
+  }
+  .diary-btn-save:hover { background: rgba(212, 184, 150, 0.25); border-color: rgba(212, 184, 150, 0.5); }
+  .diary-btn-skip {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #6B5F52;
+  }
+  .diary-btn-skip:hover { border-color: rgba(255, 255, 255, 0.15); color: #8B7D6B; }
+  .city-note-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #E8D5A3;
+    margin-left: 6px;
+    vertical-align: middle;
+    box-shadow: 0 0 4px rgba(232, 213, 163, 0.5);
+  }
+
 </style>
 </head>
 <body>
@@ -368,7 +509,7 @@
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-icon">✈</div>
-      <div class="logo-text" id="logoText">CityDots</div>
+      <div class="logo-text" id="logoText">城迹</div>
       <button class="lang-btn" onclick="toggleLang()" title="Switch Language" id="langBtn">EN</button>
     </div>
 
@@ -393,6 +534,7 @@
 
   <div class="main">
     <div class="landmark-bg" id="landmarkBg"></div>
+    <div class="glass-pane"></div>
     <div class="header">
       <span class="header-title" id="headerTitle">中 国</span>
       <button class="back-btn" id="backBtn" onclick="backToChina()">← 返回全国</button>
@@ -410,6 +552,21 @@
       <a href="#" onclick="showModal('about');return false;" id="footerAbout">关于我们</a>
       <span class="footer-divider">|</span>
       <a href="mailto:sydneyjiang00@gmail.com" id="footerContact">联系我们</a>
+    </div>
+  </div>
+</div>
+
+
+<div class="diary-overlay" id="diaryOverlay">
+  <div class="diary-popup" onclick="event.stopPropagation()">
+    <div class="diary-header">到达 <span class="diary-city-name" id="diaryCityName"></span></div>
+    <div class="diary-body">
+      <input type="date" class="diary-date" id="diaryDate">
+      <input type="text" class="diary-note" id="diaryNote" placeholder="写一句话… 比如：和朋友骑车到西湖边">
+    </div>
+    <div class="diary-actions">
+      <button class="diary-btn diary-btn-skip" onclick="saveDiary(true)">只标记</button>
+      <button class="diary-btn diary-btn-save" onclick="saveDiary(false)">保存</button>
     </div>
   </div>
 </div>
@@ -433,8 +590,8 @@ let lang = localStorage.getItem(LANG_KEY) || 'zh';
 
 const i18n = {
   zh: {
-    title: 'CityDots · 城市印记',
-    logo: 'CityDots',
+    title: '城迹 · CityDots',
+    logo: '城迹',
     citiesVisited: '已访问城市',
     provincesCovered: '覆盖 {n} 个省份',
     provincesNone: '覆盖 0 个省份',
@@ -465,11 +622,11 @@ const i18n = {
     modalPrivacyTitle: '隐私政策',
     modalPrivacyBody: '<p>本网站仅使用浏览器的本地存储（localStorage）保存您标记的城市数据。</p><p>所有数据<strong>存储在您的设备上</strong>，不会被上传到任何服务器，也不会被分享给第三方。</p><p>您可以随时点击"清空记录"按钮删除所有数据。</p><p>本网站不含任何追踪脚本、cookies 或分析工具。</p>',
     modalAboutTitle: '关于我们',
-    modalAboutBody: '<p>CityDots 是一个帮助旅行者记录中国城市探索历程的互动工具。</p><p>点击地图上的城市，用一个个亮点串起属于你自己的旅行地图。</p>'
+    modalAboutBody: '<p>城迹 是一个帮助旅行者记录中国城市探索历程的互动工具。</p><p>点击地图上的城市，用一个个亮点串起属于你自己的旅行地图。</p>'
   },
   en: {
-    title: 'CityDots · City Marks',
-    logo: 'CityDots',
+    title: 'CityDots · 城迹',
+    logo: '城迹',
     citiesVisited: 'Cities Visited',
     provincesCovered: '{n} Provinces Covered',
     provincesNone: '0 Provinces Covered',
@@ -500,7 +657,7 @@ const i18n = {
     modalPrivacyTitle: 'Privacy Policy',
     modalPrivacyBody: '<p>This website uses only your browser\'s localStorage to save your marked city data.</p><p>All data is <strong>stored on your device</strong> and is never uploaded to any server or shared with third parties.</p><p>You can delete all data at any time by clicking the "Clear Records" button.</p><p>This site contains no tracking scripts, cookies, or analytics tools.</p>',
     modalAboutTitle: 'About Us',
-    modalAboutBody: '<p style="font-size:15px;color:#D4B896;margin-bottom:16px;">Every journey leaves a mark. Every city tells a story.</p><p>CityDots transforms the map of China into a canvas for your memories — each city you visit becomes a point of light, a quiet reminder of where you have been and who you were when you arrived.</p><p>Pin the bustling streets of a megacity. Trace the mist-shrouded peaks of a mountain town. Let the map fill slowly, intentionally, one trip at a time. No gamification. No social noise. Just you and the places that shaped you.</p><p>A personal cartography of discovery. Minimalist. Intentional. Yours.</p>'
+    modalAboutBody: '<p style="font-size:15px;color:#D4B896;margin-bottom:16px;">Every journey leaves a mark. Every city tells a story.</p><p>城迹 transforms the map of China into a canvas for your memories — each city you visit becomes a point of light, a quiet reminder of where you have been and who you were when you arrived.</p><p>Pin the bustling streets of a megacity. Trace the mist-shrouded peaks of a mountain town. Let the map fill slowly, intentionally, one trip at a time. No gamification. No social noise. Just you and the places that shaped you.</p><p>A personal cartography of discovery. Minimalist. Intentional. Yours.</p>'
   }
 };
 
@@ -538,7 +695,20 @@ document.addEventListener('keydown', function(e) {
 const STORAGE_KEY = 'china-travel-visited';
 const MAP_KEY = 'china-travel-city-province';
 const COORDS_KEY = 'china-travel-city-coords';
-let visited = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+function loadVisited() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return {};
+  try {
+    const data = JSON.parse(raw);
+    if (Array.isArray(data)) {
+      const m = {};
+      data.forEach(function(n) { m[n] = { date: '', note: '' }; });
+      return m;
+    }
+    return data;
+  } catch(e) { return {}; }
+}
+let visited = loadVisited();
 let cityProvinceMap = JSON.parse(localStorage.getItem(MAP_KEY) || '{}');
 let cityCoords = JSON.parse(localStorage.getItem(COORDS_KEY) || '{}');
 let chinaGeoJSON = null;
@@ -572,34 +742,72 @@ fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
 const adcodeMap = {};    // province name -> adcode
 const adcodeNameMap = {}; // adcode -> province name
 
-// Province atmosphere gradients (inspired by landmark colors)
-const ATMOSPHERE = {
-  '110000': 'linear-gradient(135deg, rgba(190,95,70,0.5) 0%, rgba(200,155,90,0.3) 35%, transparent 65%), radial-gradient(ellipse at 60% 45%, rgba(220,180,120,0.35) 0%, transparent 55%)',
-  '310000': 'linear-gradient(180deg, rgba(70,90,160,0.4) 0%, rgba(120,140,200,0.25) 35%, transparent 65%), radial-gradient(ellipse at 65% 50%, rgba(160,150,210,0.3) 0%, transparent 50%)',
-  '440000': 'linear-gradient(135deg, rgba(50,120,90,0.4) 0%, rgba(80,150,120,0.25) 45%, transparent 65%), radial-gradient(ellipse at 45% 55%, rgba(100,180,150,0.3) 0%, transparent 50%)',
-  '510000': 'linear-gradient(180deg, rgba(45,110,70,0.45) 0%, rgba(90,150,110,0.25) 45%, transparent 65%), radial-gradient(ellipse at 40% 45%, rgba(130,190,150,0.3) 0%, transparent 50%)',
-  '530000': 'linear-gradient(180deg, rgba(35,120,130,0.4) 0%, rgba(70,160,90,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 40%, rgba(110,190,160,0.35) 0%, transparent 50%)',
-  '540000': 'linear-gradient(180deg, rgba(90,120,180,0.4) 0%, rgba(160,180,220,0.2) 35%, transparent 65%), radial-gradient(ellipse at 50% 30%, rgba(200,220,250,0.35) 0%, transparent 50%)',
-  '610000': 'linear-gradient(135deg, rgba(180,140,70,0.45) 0%, rgba(200,150,60,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 50%, rgba(220,180,110,0.3) 0%, transparent 50%)',
-  '330000': 'linear-gradient(180deg, rgba(50,120,120,0.4) 0%, rgba(100,160,160,0.2) 45%, transparent 65%), radial-gradient(ellipse at 50% 45%, rgba(140,200,200,0.3) 0%, transparent 50%)',
-  '320000': 'linear-gradient(135deg, rgba(70,140,90,0.4) 0%, rgba(120,170,120,0.2) 45%, transparent 65%), radial-gradient(ellipse at 55% 50%, rgba(150,200,160,0.3) 0%, transparent 50%)',
-  '450000': 'linear-gradient(180deg, rgba(35,130,90,0.45) 0%, rgba(70,160,120,0.25) 45%, transparent 65%), radial-gradient(ellipse at 45% 55%, rgba(90,190,140,0.35) 0%, transparent 50%)',
-  '430000': 'linear-gradient(180deg, rgba(50,110,90,0.4) 0%, rgba(70,140,120,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 40%, rgba(110,180,160,0.35) 0%, transparent 50%)',
-  '370000': 'linear-gradient(180deg, rgba(100,110,90,0.4) 0%, rgba(150,160,120,0.2) 45%, transparent 65%), radial-gradient(ellipse at 50% 30%, rgba(180,190,160,0.3) 0%, transparent 50%)',
-  '650000': 'linear-gradient(180deg, rgba(70,100,150,0.4) 0%, rgba(120,160,190,0.25) 35%, transparent 65%), radial-gradient(ellipse at 50% 25%, rgba(170,200,230,0.35) 0%, transparent 50%)',
-  '460000': 'linear-gradient(180deg, rgba(25,140,160,0.45) 0%, rgba(50,170,180,0.25) 45%, transparent 65%), radial-gradient(ellipse at 50% 60%, rgba(80,200,220,0.35) 0%, transparent 50%)',
+// Province landmark images (Unsplash photo IDs, verified)
+const LANDMARKS = {
+  '110000': 'photo-1603120527222-33f28c2ce89e',  // Forbidden City, Beijing
+  '120000': 'photo-1722078037202-5a8687b37493',  // Tianjin
+  '130000': 'photo-1713909989764-a4f8f105f090',  // Chengde Mountain Resort, Hebei
+  '140000': 'photo-1664980337737-df27575392f7',  // Yungang Grottoes, Shanxi
+  '150000': 'photo-1672453211229-75223c4ec69b',  // Hulunbuir Grassland, Inner Mongolia
+  '210000': 'photo-1612780732270-a26e4ec675c3',  // Shenyang Imperial Palace, Liaoning
+  '220000': 'photo-1455156218388-5e61b526818b',  // Changbai Mountain, Jilin
+  '230000': 'photo-1675522108963-c1ea024abb8a',  // Harbin Ice Festival, Heilongjiang
+  '310000': 'photo-1538428494232-9c0d8a3ab403',  // The Bund, Shanghai
+  '320000': 'photo-1689825650048-55d2216868f7',  // Suzhou Garden, Jiangsu
+  '330000': 'photo-1697553308664-5aed18530490',  // West Lake, Hangzhou
+  '340000': 'photo-1591116198055-f71bce1175b0',  // Huangshan, Anhui
+  '350000': 'photo-1716043835776-9ac7fbc72631',  // Fujian Tulou
+  '360000': 'photo-1778546978267-b93e8c6ea099',  // Wuyuan, Jiangxi
+  '370000': 'photo-1780580940878-248a6ad4b626',  // Mount Tai, Shandong
+  '410000': 'photo-1710731938920-cc5396d995e9',  // Longmen Grottoes, Henan
+  '420000': 'photo-1682082286090-0c8651b52004',  // Yellow Crane Tower, Hubei
+  '430000': 'photo-1744034949892-2d65ccf9f7c1',  // Zhangjiajie, Hunan
+  '440000': 'photo-1563090162-6b4c2a20d658',  // Canton Tower, Guangdong
+  '450000': 'photo-1537531383496-f4749b8032cf',  // Guilin Karst, Guangxi
+  '460000': 'photo-1599975225934-a60267556759',  // Sanya, Hainan
+  '500000': 'photo-1723242015581-54006fff9204',  // Hongyadong, Chongqing
+  '510000': 'photo-1635772512104-98695c3a73f1',  // Jiuzhaigou, Sichuan
+  '520000': 'photo-1559101806-e1dfa4685ef7',  // Huangguoshu Waterfall, Guizhou
+  '530000': 'photo-1677922069735-84366a41e996',  // Lijiang Old Town, Yunnan
+  '540000': 'photo-1626359909709-8067b64e1655',  // Potala Palace, Tibet
+  '610000': 'photo-1527922891260-918d42a4efc8',  // Terracotta Warriors, Shaanxi
+  '620000': 'photo-1779950369695-55b777c40ff2',  // Mogao Caves, Gansu
+  '630000': 'photo-1636446696081-268a135d02a8',  // Qinghai Lake
+  '640000': 'photo-1777975433721-37a919288c7a',  // Ningxia
+  '650000': 'photo-1589248581509-b1b6a789db8b',  // Tianshan, Xinjiang
+  '710000': 'photo-1694908153357-658c532d25a8',  // Taipei 101, Taiwan
+  '810000': 'photo-1576788369575-4ab045b9287e',  // Victoria Harbour, Hong Kong
+  '820000': 'photo-1555331446-0ff637678740',  // Macau
 };
+
+const landmarkCache = {};
+
+function landmarkUrl(adcode) {
+  if (landmarkCache[adcode]) return landmarkCache[adcode];
+  const photoRef = LANDMARKS[adcode];
+  if (!photoRef) return null;
+  return `https://images.unsplash.com/${photoRef}?w=1600&q=80`;
+}
 
 function setLandmarkBg(adcode) {
   const bg = document.getElementById('landmarkBg');
-  const gradient = ATMOSPHERE[adcode];
-  if (gradient) {
-    bg.style.backgroundImage = gradient;
-    bg.classList.add('show');
-  } else {
+  const url = landmarkUrl(adcode);
+  if (!url) {
     bg.style.backgroundImage = 'none';
     bg.classList.remove('show');
+    return;
   }
+  const img = new Image();
+  img.onload = function () {
+    landmarkCache[adcode] = `url(${url})`;
+    bg.style.backgroundImage = `url(${url})`;
+    bg.classList.add('show');
+  };
+  img.onerror = function () {
+    bg.style.backgroundImage = 'none';
+    bg.classList.remove('show');
+  };
+  img.src = url;
 }
 
 function clearLandmarkBg() {
@@ -664,7 +872,7 @@ function doRenderProvince(adcode) {
 // ========== City Dots ==========
 function buildMarkPoints() {
   const points = [];
-  for (const cityName of visited) {
+  for (const cityName of Object.keys(visited)) {
     const coords = cityCoords[cityName];
     if (coords && coords.length === 2) {
       points.push({
@@ -706,7 +914,7 @@ function buildMapOption(mapName, features) {
   const isChinaView = mapName === 'china';
   const data = features.map(f => {
     const name = f.properties.name;
-    const isVisited = visited.has(name);
+    const isVisited = !!visited[name];
 
     return {
       name: name,
@@ -719,11 +927,11 @@ function buildMapOption(mapName, features) {
                 { offset: 0.7, color: 'rgba(201,166,122,0.8)' },
                 { offset: 1, color: 'rgba(180,145,100,0.85)' }
               ]}
-          : 'rgba(255,248,240,0.04)',
-        borderColor: isVisited ? 'rgba(232,213,163,0.5)' : 'rgba(255,255,255,0.04)',
-        borderWidth: isVisited ? 1.2 : 0.5,
-        shadowBlur: isVisited ? 14 : 0,
-        shadowColor: 'rgba(212,184,150,0.35)',
+          : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(248,245,240,0.32)' }, { offset: 1, color: 'rgba(238,233,225,0.40)' }]},
+        borderColor: isVisited ? 'rgba(232,213,163,0.45)' : 'rgba(255,255,255,0.1)',
+        borderWidth: isVisited ? 1.2 : 0.8,
+        shadowBlur: isVisited ? 14 : 1,
+        shadowColor: isVisited ? 'rgba(212,184,150,0.35)' : 'rgba(0,0,0,0.06)',
         shadowOffsetY: isVisited ? 1 : 0
       },
       emphasis: {
@@ -756,15 +964,20 @@ function buildMapOption(mapName, features) {
       formatter: function(params) {
         if (!params.name) return '';
         if (params.componentType === 'markPoint') {
-          return '<span style="color:#D4B896">✦ ' + t('visited') + ': ' + params.name + '</span>';
+          var v = visited[params.name];
+          var noteHtml = (v && v.note) ? '<br/><span style="color:#8B7D6B;font-size:11px">' + v.note + '</span>' : '';
+          var dateHtml = (v && v.date) ? '<span style="color:#6B5F52;font-size:11px">' + v.date + ' </span>' : '';
+          return dateHtml + '<span style="color:#D4B896">✦ ' + t('visited') + ': ' + params.name + '</span>' + noteHtml;
         }
-        const isVisited = visited.has(params.name);
+        const isVisited = !!visited[params.name];
         const hint = isChinaView
           ? '<span style="color:#D4B896">' + t('tooltipDrill') + '</span>'
           : (isVisited
             ? '<span style="color:#D4B896">' + t('tooltipVisited') + '</span>'
             : '<span style="color:#8B7D6B">' + t('tooltipNotVisited') + '</span>');
-        return '<span style="font-size:14px;color:#fff">' + params.name + '</span><br/>' + hint;
+        var v = visited[params.name];
+        var noteHtml = (v && v.note) ? '<br/><span style="color:#8B7D6B;font-size:11px">“' + v.note + '”</span>' : '';
+        return '<span style="font-size:14px;color:#fff">' + params.name + '</span><br/>' + hint + noteHtml;
       }
     },
     series: [{
@@ -775,10 +988,11 @@ function buildMapOption(mapName, features) {
       zoom: isChinaView ? 1.2 : 1,
       label: {
         show: true,
-        color: 'rgba(200,188,170,0.35)',
-        fontSize: isChinaView ? 10 : 12,
-        textShadowBlur: 2,
-        textShadowColor: 'rgba(0,0,0,0.4)',
+        color: 'rgba(220,210,190,0.7)',
+        fontSize: isChinaView ? 11 : 13,
+        fontWeight: isChinaView ? 'normal' : 'bold',
+        textShadowBlur: 3,
+        textShadowColor: 'rgba(0,0,0,0.6)',
         formatter: function(p) {
           if (!p.name) return '';
           const n = p.name;
@@ -787,9 +1001,9 @@ function buildMapOption(mapName, features) {
         }
       },
       itemStyle: {
-        borderColor: 'rgba(255,255,255,0.04)',
-        borderWidth: 0.5,
-        areaColor: 'rgba(255,248,240,0.04)'
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 0.8,
+        areaColor: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(248,245,240,0.32)' }, { offset: 1, color: 'rgba(238,233,225,0.40)' }] }
       },
       emphasis: {
         label: { color: '#F0E8D8' },
@@ -854,23 +1068,80 @@ function bindClick(mapName) {
     } else {
       // City level: toggle visited
       toggleCity(params.name);
+      if (!visited[params.name] || !pendingCity) {
+        // Ripple on both add and remove
+        showRipple(params.event.event);
+      }
       // Re-render to update color
-      doRenderProvince(currentView);
-      updateStats();
+      if (!pendingCity) {
+        doRenderProvince(currentView);
+        updateStats();
+      }
     }
   });
 }
 
+let pendingCity = null;
+
 function toggleCity(name) {
-  if (visited.has(name)) {
-    visited.delete(name);
+  if (visited[name]) {
+    delete visited[name];
     showToast(t('toastCancel') + name);
+    saveVisited();
   } else {
-    visited.add(name);
-    showToast(t('toastAdd') + name);
+    pendingCity = name;
+    document.getElementById('diaryCityName').textContent = name;
+    document.getElementById('diaryDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('diaryNote').value = '';
+    document.getElementById('diaryOverlay').classList.add('show');
+    setTimeout(function() { document.getElementById('diaryNote').focus(); }, 350);
   }
-  saveVisited();
 }
+
+function saveDiary(skip) {
+  var cityName = pendingCity;
+  if (!cityName) return;
+  var d = document.getElementById('diaryDate').value;
+  var n = skip ? '' : document.getElementById('diaryNote').value.trim();
+  visited[cityName] = { date: d, note: n };
+  document.getElementById('diaryOverlay').classList.remove('show');
+  pendingCity = null;
+  showToast('✦ 到达：' + cityName);
+  saveVisited();
+  if (currentView === 'china') { renderChina(); }
+  else { doRenderProvince(currentView); }
+  updateStats();
+}
+
+document.getElementById('diaryOverlay').addEventListener('click', function() {
+  if (pendingCity) {
+    document.getElementById('diaryOverlay').classList.remove('show');
+    var cityName = pendingCity;
+    var d = document.getElementById('diaryDate').value;
+    visited[cityName] = { date: d, note: '' };
+    pendingCity = null;
+    showToast('✦ 到达：' + cityName);
+    saveVisited();
+    if (currentView === 'china') { renderChina(); }
+    else { doRenderProvince(currentView); }
+    updateStats();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && pendingCity) {
+    document.getElementById('diaryOverlay').classList.remove('show');
+    var cityName = pendingCity;
+    var d = document.getElementById('diaryDate').value;
+    visited[cityName] = { date: d, note: '' };
+    pendingCity = null;
+    showToast('✦ 到达：' + cityName);
+    saveVisited();
+    if (currentView === 'china') { renderChina(); }
+    else { doRenderProvince(currentView); }
+    updateStats();
+  }
+});
 
 function backToChina() {
   document.getElementById('headerTitle').textContent = t('china');
@@ -879,13 +1150,13 @@ function backToChina() {
 
 // ========== Persistence ==========
 function saveVisited() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...visited]));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(visited));
 }
 
 function resetAll() {
-  if (visited.size === 0) return;
+  if (Object.keys(visited).length === 0) return;
   if (confirm(t('confirmClear'))) {
-    visited.clear();
+    visited = {};
     saveVisited();
     if (currentView === 'china') {
       renderChina();
@@ -929,12 +1200,13 @@ function refreshAllUI() {
 }
 
 function updateStats() {
-  const count = visited.size;
+  const cityNames = Object.keys(visited);
+  const count = cityNames.length;
   const total = 370;
   const rate = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0';
 
   let provWithVisits = new Set();
-  for (const cityName of visited) {
+  for (const cityName of cityNames) {
     const provAdcode = cityProvinceMap[cityName];
     if (provAdcode) {
       provWithVisits.add(provAdcode);
@@ -948,24 +1220,42 @@ function updateStats() {
     provCount > 0 ? t('provincesCovered', { n: provCount }) : t('provincesNone');
 
   const listEl = document.getElementById('cityList');
-  if (visited.size === 0) {
+  if (count === 0) {
     listEl.innerHTML =
       '<div style="color:#444;text-align:center;padding:20px;">' + t('emptyHint') + '</div>';
     return;
   }
 
-  const sorted = [...visited].sort((a, b) => {
+  const sorted = cityNames.sort(function(a, b) {
     const pa = adcodeNameMap[cityProvinceMap[a]] || '';
     const pb = adcodeNameMap[cityProvinceMap[b]] || '';
     return pa.localeCompare(pb) || a.localeCompare(b);
   });
 
-  listEl.innerHTML = sorted.map(name => {
+  listEl.innerHTML = sorted.map(function(name) {
     const provAdcode = cityProvinceMap[name];
     const provName = adcodeNameMap[provAdcode] || '';
+    const hasNote = visited[name] && visited[name].note;
+    var noteDot = hasNote ? '<span class="city-note-dot" title="' + visited[name].note.replace(/"/g, '&quot;') + '"></span>' : '';
+    var dateStr = (visited[name] && visited[name].date) ? '<span class="province">' + visited[name].date + ' · </span>' : '';
     return '<div class="city-item"><span>' + name +
-      '<span class="province"> · ' + provName + '</span></span><div class="dot"></div></div>';
+      noteDot +
+      '<span class="province">' + dateStr + provName + '</span></span><div class="dot"></div></div>';
   }).join('');
+}
+
+
+function showRipple(e) {
+  var mainEl = document.querySelector('.main');
+  var rect = mainEl.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var y = e.clientY - rect.top;
+  var ripple = document.createElement('div');
+  ripple.className = 'ripple';
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
+  mainEl.appendChild(ripple);
+  setTimeout(function() { ripple.remove(); }, 1300);
 }
 
 // ========== Toast ==========
